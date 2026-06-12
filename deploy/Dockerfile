@@ -9,7 +9,7 @@ COPY frontend/ ./
 RUN npm run build   # outputs to /app/internal/web/dist
 
 # ---- Stage 2: build the Go binary (embeds the SPA) ----
-FROM golang:1.24-alpine AS backend
+FROM golang:1.25-alpine AS backend
 WORKDIR /app
 RUN apk add --no-cache git
 COPY go.mod go.sum ./
