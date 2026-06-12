@@ -39,3 +39,18 @@ export async function get<T>(url: string): Promise<T> {
   const res = await api.get(url);
   return res.data.data as T;
 }
+
+export async function post<T>(url: string, body?: unknown): Promise<T> {
+  const res = await api.post(url, body);
+  return res.data.data as T;
+}
+
+export async function put<T>(url: string, body?: unknown): Promise<T> {
+  const res = await api.put(url, body);
+  return res.data.data as T;
+}
+
+export async function del<T>(url: string): Promise<T> {
+  const res = await api.delete(url);
+  return res.data.data as T;
+}

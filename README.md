@@ -29,14 +29,18 @@ This is an in-progress build. Implemented so far:
 
 - [x] Project skeleton, config, DB layer (SQLite/Postgres), auto-migration
 - [x] Admin auth: argon2id hashing, JWT access/refresh, `vpanel admin create` CLI
-- [x] REST API skeleton + middleware (JWT, roles, rate limit), system stats
-- [x] Embedded React SPA: animated login + dashboard shell
+- [x] REST API + middleware (JWT, roles, rate limit), system stats
+- [x] Embedded React SPA: animated login, dashboard, inbounds, users, cores
+- [x] Core supervision: process lifecycle (backoff, crash-loop, ring-buffer logs)
+- [x] Both cores wired with DB-driven config generation + debounced reconcile:
+  - **Xray:** VLESS (Reality/Vision), VMess, Trojan, Shadowsocks
+  - **sing-box:** Hysteria2, TUIC, VLESS, VMess, Trojan, Shadowsocks, AnyTLS, NaiveProxy
+- [x] Inbound CRUD + Reality keypair generator; User CRUD + provisioning
 - [x] Deployment: Dockerfile (bundles cores), docker-compose, Caddy, install.sh
-- [ ] Inbounds + Xray supervision (VLESS+Reality)
-- [ ] Users + provisioning
 - [ ] Subscription system (base64 / Clash / sing-box)
 - [ ] Traffic accounting + quota/expiry enforcement
-- [ ] sing-box core integration
+- [ ] WireGuard / AmneziaWG (dedicated core — needs peer/key/IP model)
+- [ ] mieru, MTProto (Phase 2)
 
 See [docs/architecture.md](docs/architecture.md) for the full design and the
 phased build plan.

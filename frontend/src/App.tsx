@@ -3,6 +3,9 @@ import { useAuth } from "./store/auth";
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Inbounds from "./pages/Inbounds";
+import Users from "./pages/Users";
+import Cores from "./pages/Cores";
 import Placeholder from "./pages/Placeholder";
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -22,9 +25,9 @@ export default function App() {
         }
       >
         <Route path="/" element={<Dashboard />} />
-        <Route path="/users" element={<Placeholder title="Users" />} />
-        <Route path="/inbounds" element={<Placeholder title="Inbounds" />} />
-        <Route path="/cores" element={<Placeholder title="Cores" />} />
+        <Route path="/users" element={<Users />} />
+        <Route path="/inbounds" element={<Inbounds />} />
+        <Route path="/cores" element={<Cores />} />
         <Route path="/settings" element={<Placeholder title="Settings" />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

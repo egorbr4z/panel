@@ -17,6 +17,7 @@ import (
 	"github.com/egorbr4z/panel/internal/api"
 	"github.com/egorbr4z/panel/internal/api/handler"
 	"github.com/egorbr4z/panel/internal/config"
+	"github.com/egorbr4z/panel/internal/core"
 	"github.com/egorbr4z/panel/internal/database"
 	"github.com/egorbr4z/panel/internal/models"
 	"github.com/egorbr4z/panel/internal/service/auth"
@@ -37,7 +38,14 @@ func main() {
 	}
 
 	jm := auth.NewManager(cfg.JWTSecret, cfg.AccessTokenTTL, cfg.RefreshTokenTTL)
-	router := api.NewRouter(cfg, db, jm)
+
+	// Core supervisor: launches/reconciles Xray + sing-box from the DB.
+	mgr := core.NewManager(db, cfg)
+	if err := mgr.Start(); err != nil {
+		log.Printf("core manager start: %v", err)
+	}
+
+	router := api.NewRouter(cfg, db, jm, mgr)
 
 	srv := &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", cfg.HTTPHost, cfg.HTTPPort),
@@ -63,6 +71,7 @@ func main() {
 	if err := srv.Shutdown(ctx); err != nil {
 		log.Printf("shutdown error: %v", err)
 	}
+	mgr.Stop()
 }
 
 // runAdminCmd handles the `admin create` subcommand used by install.sh and ops.
