@@ -4,7 +4,7 @@
 FROM node:22-alpine AS frontend
 WORKDIR /app/frontend
 COPY frontend/package.json frontend/package-lock.json* ./
-RUN npm ci || npm install
+RUN --mount=type=cache,target=/root/.npm npm ci || npm install
 COPY frontend/ ./
 RUN npm run build   # outputs to /app/internal/web/dist
 
@@ -13,12 +13,14 @@ FROM golang:1.25-alpine AS backend
 WORKDIR /app
 RUN apk add --no-cache git
 COPY go.mod go.sum ./
-RUN go mod download
+RUN --mount=type=cache,target=/go/pkg/mod go mod download
 COPY . .
 # Bring in the freshly built SPA so go:embed picks it up.
 COPY --from=frontend /app/internal/web/dist ./internal/web/dist
 ARG VERSION=docker
-RUN CGO_ENABLED=0 go build -trimpath \
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=0 go build -trimpath \
     -ldflags "-s -w -X github.com/egorbr4z/panel/internal/api/handler.Version=${VERSION}" \
     -o /vpanel ./cmd/vpanel
 
