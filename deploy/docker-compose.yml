@@ -1,0 +1,58 @@
+# vpanel deployment. Two lean containers: the panel (bundling Xray + sing-box
+# as supervised child processes) and Caddy (auto-TLS reverse proxy).
+# Tuned to stay comfortable on a 1 GB / 1 vCPU host.
+
+services:
+  vpanel:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: vpanel:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      GOMEMLIMIT: "256MiB"
+      GOGC: "50"
+    volumes:
+      - ./data:/var/lib/vpanel
+    # Proxy protocol ports (Reality/Hysteria2/etc.) are published directly.
+    # Add more as you create inbounds, e.g. "443:443", "8443:8443/udp".
+    ports:
+      - "8080:8080"
+    cap_add:
+      - NET_ADMIN # only needed for WireGuard/AmneziaWG inbounds
+    mem_limit: 384m
+    cpus: "0.8"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - vpanel
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    mem_limit: 96m
+
+  # Optional PostgreSQL. Enable with: docker compose --profile pg up -d
+  # and set VPANEL_DB=postgres + VPANEL_DB_DSN in .env.
+  postgres:
+    image: postgres:16-alpine
+    profiles: ["pg"]
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: vpanel
+      POSTGRES_PASSWORD: vpanel
+      POSTGRES_DB: vpanel
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    mem_limit: 256m
+
+volumes:
+  caddy_data:
+  caddy_config:
+  pg_data:

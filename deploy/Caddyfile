@@ -1,0 +1,11 @@
+# Caddy fronts only the panel + subscription web traffic on 443 (automatic TLS).
+# Proxy protocol ports (Reality/Hysteria2/TUIC/...) bypass Caddy entirely — the
+# cores terminate their own TLS and are published directly by the vpanel service.
+#
+# Replace panel.example.com with your domain. The {$PANEL_DOMAIN} placeholder is
+# filled from the environment by docker-compose / install.sh.
+
+{$PANEL_DOMAIN} {
+	encode zstd gzip
+	reverse_proxy vpanel:8080
+}

@@ -1,0 +1,35 @@
+# Go
+/vpanel
+*.test
+*.out
+
+# Build artifacts / embedded frontend build
+/internal/web/dist/assets/
+/internal/web/dist/*.js
+/internal/web/dist/*.css
+
+# Frontend
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.vite/
+
+# Runtime data
+/data/
+*.db
+*.db-shm
+*.db-wal
+
+# Local env / secrets
+.env
+.env.local
+/deploy/data/
+/deploy/certs/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# TS build info
+/frontend/tsconfig.tsbuildinfo
