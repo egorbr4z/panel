@@ -5,6 +5,7 @@ package database
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -19,8 +20,14 @@ import (
 
 // Open creates the GORM DB handle for the configured driver and migrates schema.
 func Open(cfg *config.Config) (*gorm.DB, error) {
+	// Warn-level logging, but don't treat "record not found" as a warning — it
+	// is expected control flow for existence checks (e.g. the admin upsert).
 	gormCfg := &gorm.Config{
-		Logger:      logger.Default.LogMode(logger.Warn),
+		Logger: logger.New(log.New(os.Stdout, "\r\n", log.LstdFlags), logger.Config{
+			SlowThreshold:             200 * time.Millisecond,
+			LogLevel:                  logger.Warn,
+			IgnoreRecordNotFoundError: true,
+		}),
 		PrepareStmt: true,
 	}
 
